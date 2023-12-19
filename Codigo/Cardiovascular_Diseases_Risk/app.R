@@ -1,0 +1,316 @@
+#-----------------------
+library(tidyverse)
+library(shiny)
+
+
+#Importación-----------------------
+load("model_rf.Rdata")
+load("parametros.Rdata")
+CDR <- read.csv("../CDR Prediction Dataset.csv") %>% tibble
+
+
+#------------------------------------------PÁGUINA----------------
+#UI
+uip <- navbarPage("Cardiovascular Diseases Risk Prediction Dataset",
+                  
+                  tabPanel("Introducción",
+                           
+                           h1("Enfermedades Cardiovasculares"),
+                           p("Este es un ejercicio de análisis y alpicación de modelos de aprendizaje supervisado de machine learning.
+                    Los datos y trabajo original corresponden al usuario 'ALPHIREE' en kaggle. Pueden encontrar la información completa
+                    en los siguientes links: ",
+                             
+                             uiOutput("kagle_link"),
+                             uiOutput("articulo_link"),
+                             
+                           ),
+                           
+                           p("La enfermedad cardiovascular es un término amplio para problemas con el corazón y los vasos sanguíneos.
+                            Estos problemas a menudo se deben a la aterosclerosis. Esta afección ocurre cuando la grasa y el colesterol 
+                            se acumulan en las paredes del vaso sanguíneo (arteria). Esta acumulación se llama placa. Con el tiempo,
+                            la placa puede estrechar los vasos sanguíneos y causar problemas en todo el cuerpo. Si una arteria resulta 
+                            obstruida, esto puede llevar a que se presente un ataque cardíaco o un accidente cerebrovascular."),
+                           p("En México, cerca de 220 mil personas fallecieron por enfermedades cardiovasculares en 2021, 
+                            de las cuales 177 mil fueron por infarto al miocardio, que puede ser prevenible al evitar o controlar 
+                            los factores de riesgo como el tabaquismo, presión arterial alta, colesterol elevado y diabetes no controlada."),
+                           
+                           imageOutput("corazon"),
+                           tags$style(HTML(".centered-image { display: block; margin: 0 auto; }")),
+                           
+                           h3("Referencias"),
+                           p("MedicinePlus, (https://medlineplus.gov/spanish/ency/patientinstructions/000759.htm#:~:text=La%20enfermedad%20cardiovascular%20es%20un,del%20vaso%20sangu%C3%ADneo%20(arteria).)"),
+                           p("Gob.mx, (https://www.gob.mx/salud/prensa/490-cada-ano-220-mil-personas-fallecen-debido-a-enfermedades-del-corazon#:~:text=En%20M%C3%A9xico%2C%20cerca%20de%20220,elevado%20y%20diabetes%20no%20controlada.)")
+                  ),
+                  
+                  tabPanel("Análisis de los Datos",
+                           HTML("<p>Behavioral Risk Factor Surveillance System (BRFSS) 
+                             es el principal sistema de encuestas telefónicas relacionadas con la salud a nivel 
+                             nacional en Estados Unidos, recopila datos estatales sobre los residentes
+                             del país en lo que respecta a sus comportamientos relacionados con el riesgo para 
+                             la salud, las condiciones crónicas de salud y el uso de servicios preventivos.
+                             De esta fuente, el usuario 'ALPHIREE' en Kaggle proceso y limpio los registros para obtener
+                             el conjunto de datos. <Br>
+                             Cabe destacar que el número de registros con algún padecimiento cardiaco esta cerca del 
+                             8% del total en el conjunto de datos.</p><Br>"),
+                           
+                           HTML("<p>- Correlación: En esta primera imagen, se puede apreciar que entre las variables numéricas, 
+                           el índice de masa corporal tiene una correlación muy elevada con la masa y talla, 
+                           lo cual es lógico, ya que se deriva de estos valores para su cálculo.
+                           Además, el consumo de frutas también muestra cierta correlación con el consumo de vegetales; 
+                           esto da a entender el estilo de vida de la persona. <Br>
+                           - Artritís y Fumador: Las siguientes dos gráficas cuentan el número de personas del conjunto de datos
+                                que padecen artritis y/o fuman o no, coloreando de azul los que corresponden a pacientes con enfermedades
+                                cardiobasculares; en ambos gráficos, cuando el registro dice que 'SI' padecen artritis o que 'SI',
+                                fuman, se ve un pequeño incremento en los casos de personas con padecimiento cardiaco, 
+                                siendo menor el numéro de registros en donde dicen 'SI' a la cuestión, existe una mayor proporción
+                                de casos con enfermedades cardiacas.</p>"),
+                           
+                           imageOutput("correlacion"),
+                           
+                           HTML("<p>- Edad:En el siguiente gráfico se ve que existe una relación entre la edad y el número de
+                             casos con enfermedades cardiacas, entre más edad, mayor la probabilidad de padecer del corazón.<Br>
+                                - Indice de masa corporal: El gráfico de violín entre el índice de masa corporal tienen
+                                casi los mismos rangos y comportamiento. Se compararon ambos grupos por medio de 
+                                el test 'Wilcoxon' para muestras no paramétricas dando a conocer que si dieferen entre sí;
+                                lo que da a concocer que el índice de masa corporal también influye en las enfermedades
+                                cardiovasculares."),#Aquí voy
+                           
+                           imageOutput("variables")
+                  ),
+                  
+                  
+                  tabPanel("Modelo",
+                           
+                           downloadButton("table.out","Descarga la Tabla"),dataTableOutput("table"),
+                           p("Aplicación del modelo"),
+                           
+                           #Primer renglón
+                           fluidRow(
+                             #width numero de posiciones despúes del anterior,
+                             #offset = Ancho de columna
+                             column(width = 2,offset = 0,
+                                    radioButtons("General_Health","¿Cómo consideras tu salud?",
+                                                 c("Excelente" = 5,
+                                                   "Muy buena" = 4,
+                                                   "Buena" = 3,
+                                                   "Normal" = 2,
+                                                   "Mala" = 1))   ),
+                             column(width = 2,offset = 1,
+                                    radioButtons("Checkup","¿Cada cuanto te haces estudios?",
+                                                 c("Cada año" = 5,
+                                                   "Cada dos años" = 4,
+                                                   "Cada 5 años" = 3,
+                                                   "Cada más de 5 años" = 2,
+                                                   "Nunca" = 1))   ),
+                             column(width = 1,offset = 1,
+                                    radioButtons("Exercise","¿Realizas ejercicio?",
+                                                 c("No" = 0,
+                                                   "Si" = 1))   ),
+                             column(width = 1,offset = 1,
+                                    radioButtons("sexo","Sexo",
+                                                 c("Masculino" = "Male",
+                                                   "Femenino" = "Female"))   ),
+                             column(width = 2,offset = 1,
+                                    radioButtons("fumar","¿Fumas de manera cotidiana?",
+                                                 c("Si" = 1,
+                                                   "No" = 0))
+                             ),
+                             
+                             #Espacio
+                             fluidRow(column(".",width = 2,offset = 1,),
+                                      column("",width = 2,offset = 1,)),
+                             
+                             fluidRow(column(".",width = 2,offset = 1,)),
+                             fluidRow(column(".",width = 2,offset = 1,)),
+                             
+                             #Espacio
+                             fluidRow(column("Datos numéricos",width = 5,offset = 0)),
+                             
+                             #Segundo renglón
+                             fluidRow(
+                               column(width = 2,offset = 1,
+                                      numericInput("edad","Edad (años)",min = 1, max = 100, value = 18)   ),
+                               column(width = 2,offset = 1,
+                                      numericInput("Height","Altura (cm)",min = 1, max = 250, value = 150)   ),
+                               column(width = 2,offset = 1,
+                                      numericInput("Weight","Peso (kg)",min = 1, max = 250, value = 60)   )
+                             ),
+                             
+                             #Espacios
+                             fluidRow(column(".",width = 2,offset = 1,)),
+                             fluidRow(column(".",width = 2,offset = 1,)),
+                             fluidRow(column(".",width = 2,offset = 1,)),
+                             
+                             HTML("Durante todo el mes pasado, ¿Cúantas veces consumiste..."),
+                             
+                             #Tercer renglón
+                             fluidRow(
+                               column(width = 2,offset = 1,
+                                      numericInput("Alcohol","Alcohol?",min = 0, max = 30, value = 0)   ),
+                               column(width = 2,offset = 1,
+                                      numericInput("Fruit","Frutas?",min = 0, max = 250, value = 30)   ),
+                               column(width = 2,offset = 1,
+                                      numericInput("Vegetables","Verduras?",min = 0, max = 250, value = 30)   ),
+                               column(width = 2,offset = 1,
+                                      numericInput("chatarra","Comida chatarra?",min = 0, max = 250, value = 30)  ))
+                           ),
+                           
+                           
+                           
+                           #Cuarto renglón
+                           fluidRow(column(" ",width = 2,offset = 1,)),
+                           fluidRow(
+                             column(width = 5,offset = 1,
+                                    checkboxGroupInput("Enfermedades","¿Tienes uno o más de estos padecimientos?",
+                                                       c("Cancer de piel" = "Skin_Cancer",
+                                                         "Otro tipo de cancer" = "Cancer",
+                                                         "Artritis" = "Arthritis",
+                                                         "Depresión" ="Depression",
+                                                         "Prediabetes" = "Prediabetes", 
+                                                         "Diabetes solo durante embarazo" = "Diabetes Embarazo",
+                                                         "Diabetes" = "Diabetes",
+                                                         "Ninguno" = "Ninguno")) )
+                           ),
+                           
+                           actionButton("goButton", "Prueba el modelo"),
+                           imageOutput("imagen_final")
+                           
+                           
+                  )
+)
+
+
+#SERVER
+serverp <- function(input, output) {
+  
+  url <- a("Kaggle", href="https://www.kaggle.com/datasets/alphiree/cardiovascular-diseases-risk-prediction-dataset")
+  url2 <- a("European - American Journals", href="https://eajournals.org/ejcsit/vol11-issue-3-2023/integrated-machine-learning-model-for-comprehensive-heart-disease-risk-assessment-based-on-multi-dimensional-health-factors/")
+  
+  output$kagle_link <- renderUI({
+    tagList(url)
+  })
+  
+  output$articulo_link <- renderUI({
+    tagList(url2)
+  })
+  
+  output$corazon <- renderImage({
+    list(src = "../Codigo/Imagenes CD/CORAZON.png",
+         width = 750, height = 400,
+         class = "centered-image")
+  }, deleteFile = FALSE)
+  
+  output$variables <- renderImage({
+    list(src = "../Codigo/Imagenes CD/Edad y BMI.png",
+         width = 1050, height = 350,
+         class = "centered-image")
+  }, deleteFile = FALSE)
+  
+  output$correlacion <- renderImage({
+    list(src = "../Codigo/Imagenes CD/Corartritis y fuma.png",
+         width = 1050, height = 350,
+         class = "centered-image")
+  }, deleteFile = FALSE)
+  
+  output$table.out <- downloadHandler(
+    filename = function() {
+      "CDR Prediction Dataset.xlsx"
+    },
+    content = function(file) {
+      writexl::write_xlsx(head(CDR,1500), file)
+    }
+  )
+  
+  observeEvent(input$goButton, 
+               
+               output$imagen_final <- renderImage({
+                 isolate({
+                   
+                   #
+                   enfermedades <- input$Enfermedades
+                   contiene <- function(var) {
+                     return(any(enfermedades == var))
+                   }
+                   
+                   if(contiene("Ninguno")){
+                     Skin_Cancer <- 0
+                     Cancer <- 0
+                     Depression <- 0
+                     Diabetes <- 0
+                     Arthritis <-  0
+                   }else{
+                     Skin_Cancer <- ifelse(contiene("Skin_Cancer")==TRUE,1,0)
+                     Cancer <- ifelse(contiene("Cancer")==TRUE,1,0)
+                     Depression <- ifelse(contiene("Depression")==TRUE,1,0)
+                     Diabetes <- case_when(
+                       contiene("Diabetes") ~ 1,
+                       contiene("Prediabetes") ~ 2,
+                       contiene("Diabetes Embarazo") ~ 3,
+                       TRUE ~ 0)
+                     Arthritis <-  ifelse(contiene("Arthritis")==TRUE,1,0)
+                   }
+                   
+                   edad <- case_when(
+                     between(input$edad,1,24) ~ 1,
+                     between(input$edad,25,29) ~ 2,
+                     between(input$edad,30,34) ~ 3,
+                     between(input$edad,35,39) ~ 4,
+                     between(input$edad,40,44) ~ 5,
+                     between(input$edad,45,49) ~ 6,
+                     between(input$edad,50,54) ~ 7,
+                     between(input$edad,55,59) ~ 8,
+                     between(input$edad,60,64) ~ 9,
+                     between(input$edad,65,69) ~ 10,
+                     between(input$edad,70,74) ~ 11,
+                     between(input$edad,75,79) ~ 12,
+                     between(input$edad,80,10000) ~ 13
+                   )
+                   
+                   BMI <-round(input$Weight / ((input$Height/100)^2 ), 2) 
+                   
+                   df <- data.frame(
+                     "Sex_Female" = ifelse(input$sexo=="Female",1,0),
+                     "Sex_Male" = ifelse(input$sexo=="Male",1,0),
+                     "Diabetes_No_prediabetes_or_borderline_diabetes" = ifelse(Diabetes == 2,1,0),
+                     "Diabetes_Yes" = ifelse(Diabetes == 1,1,0),
+                     "Diabetes_Yes_but_female_told_only_during_pregnancy" = ifelse(Diabetes == 3,1,0),
+                     "General_Health" = as.numeric(input$General_Health),
+                     "Checkup" = as.numeric(input$Checkup),
+                     "Age_Category" = edad,
+                     "Height_(cm)" = input$Height,
+                     "Weight_(kg)" = input$Weight,
+                     "BMI" = BMI,
+                     "Alcohol_Consumption" = input$Alcohol,
+                     "Fruit_Consumption" = input$Fruit,
+                     "Green_Vegetables_Consumption" = input$Vegetables,
+                     "FriedPotato_Consumption" = input$chatarra,
+                     "Exercise" = as.numeric(input$Exercise),
+                     "Skin_Cancer" = Skin_Cancer,
+                     "Other_Cancer" = Cancer,
+                     "Depression" = Depression,
+                     "Arthritis" = Arthritis,
+                     "Smoking_History" = as.numeric(input$fumar))
+                   
+                   df <- scale(df,center = parametros$HEART_center,scale = parametros$HEART_scale)
+                   pred <- predict(model.rf,df, type = "raw")#Modelo
+                   
+                   
+                   #
+                   if(pred=="Yes"){
+                     list(src = "../Codigo/Imagenes CD/cuidate.png",
+                          width = 450, height = 500,
+                          class = "centered-image")
+                   }else{
+                     list(src = "../Codigo/Imagenes CD/all good.png",
+                          width = 550, height = 500,
+                          class = "centered-image")
+                   }})
+               }, deleteFile = FALSE)
+               
+  ) 
+  
+}
+
+shinyApp(ui = uip, server = serverp)
+
+

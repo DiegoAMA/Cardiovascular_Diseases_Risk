@@ -1,0 +1,189 @@
+#PINGUINOS (PARA IR TRABAJANDO LA APP)-----------
+library(tidyverse)
+library(palmerpenguins)
+library(mice)
+
+
+#https://shiny.posit.co/r/getstarted/shiny-basics/lesson1/
+
+palmerpenguins::penguins
+
+#Limpieza
+penguins2 <- penguins %>% 
+  na.omit()
+
+#Variables
+unique(penguins$island)
+range(penguins$year)
+
+
+x = "species"
+y = "body_mass_g"
+
+#Data to exports
+data1 <- penguins2 %>% filter(island == "Torgersen") %>% select(-island)
+data2 <- penguins2 %>% filter(island == "Biscoe") %>% select(-island)
+data3 <- penguins2 %>% filter(island == "Dream") %>% select(-island)
+
+#-----------------------
+
+library(shiny)
+library(tidyverse)
+
+#Importación-----------------------
+load("model_rf.Rdata")
+load("parametros.Rdata")
+CDR <- read.csv("../CDR Prediction Dataset.csv") %>% tibble
+
+
+#------------------------------------------PÁGUINA----------------
+
+#UI
+uip <- navbarPage("Cardiovascular Diseases Risk Prediction Dataset",
+                  
+                  tabPanel("Introducción",
+                           
+                           h1("Enfermedades Cardiovasculares"),
+                           p("Este es un ejercicio de análisis y alpicación de modelos de aprendizaje supervisado de machine learning.
+                    Los datos y trabajo original corresponden al usuario 'ALPHIREE' en kaggle. Pueden encontrar la información completa
+                    en los siguientes links: ",
+                             a("kaggle (https://www.kaggle.com/datasets/alphiree/cardiovascular-diseases-risk-prediction-dataset), "),
+                             a("European American Journals (https://eajournals.org/ejcsit/vol11-issue-3-2023/integrated-machine-learning-model-for-comprehensive-heart-disease-risk-assessment-based-on-multi-dimensional-health-factors/)")),
+                           p("La enfermedad cardiovascular es un término amplio para problemas con el corazón y los vasos sanguíneos.
+                            Estos problemas a menudo se deben a la aterosclerosis. Esta afección ocurre cuando la grasa y el colesterol 
+                            se acumulan en las paredes del vaso sanguíneo (arteria). Esta acumulación se llama placa. Con el tiempo,
+                            la placa puede estrechar los vasos sanguíneos y causar problemas en todo el cuerpo. Si una arteria resulta 
+                            obstruida, esto puede llevar a que se presente un ataque cardíaco o un accidente cerebrovascular."),
+                           p("En México, cerca de 220 mil personas fallecieron por enfermedades cardiovasculares en 2021, 
+                            de las cuales 177 mil fueron por infarto al miocardio, que puede ser prevenible al evitar o controlar 
+                            los factores de riesgo como el tabaquismo, presión arterial alta, colesterol elevado y diabetes no controlada."),
+                           
+                           imageOutput("corazon"),
+                           tags$style(HTML(".centered-image { display: block; margin: 0 auto; }")),
+                           
+                           h3("Referencias"),
+                           p("MedicinePlus, (https://medlineplus.gov/spanish/ency/patientinstructions/000759.htm#:~:text=La%20enfermedad%20cardiovascular%20es%20un,del%20vaso%20sangu%C3%ADneo%20(arteria).)"),
+                           p("Gob.mx, (https://www.gob.mx/salud/prensa/490-cada-ano-220-mil-personas-fallecen-debido-a-enfermedades-del-corazon#:~:text=En%20M%C3%A9xico%2C%20cerca%20de%20220,elevado%20y%20diabetes%20no%20controlada.)")
+                  ),
+                  
+                  tabPanel("Análisis de los Datos",
+                           HTML("<p>Behavioral Risk Factor Surveillance System (BRFSS) 
+                             es el principal sistema de encuestas telefónicas relacionadas con la salud a nivel 
+                             nacional en Estados Unidos, recopila datos estatales sobre los residentes
+                             del país en lo que respecta a sus comportamientos relacionados con el riesgo para 
+                             la salud, las condiciones crónicas de salud y el uso de servicios preventivos.
+                             De esta fuente, el usuario 'ALPHIREE' en Kaggle proceso y limpio los registros para obtener
+                             el conjunto de datos. <Br>
+                             Cabe destacar que el número de registros con algún padecimiento cardiaco esta cerca del 
+                             8% del total en el conjunto de datos.</p><Br>"),
+                           
+                           HTML("<p>- Correlación: En esta primera imagen, se puede apreciar que entre las variables numéricas, 
+                           el índice de masa corporal tiene una correlación muy elevada con la masa y talla, 
+                           lo cual es lógico, ya que se deriva de estos valores para su cálculo.
+                           Además, el consumo de frutas también muestra cierta correlación con el consumo de vegetales; 
+                           esto da a entender el estilo de vida de la persona. <Br>
+                           - Artritís y Fumador: Las siguientes dos gráficas cuentan el número de personas del conjunto de datos
+                                que padecen artritis y/o fuman o no, coloreando de azul los que corresponden a pacientes con enfermedades
+                                cardiobasculares; en ambos gráficos, cuando el registro dice que 'SI' padecen artritis o que 'SI',
+                                fuman, se ve un pequeño incremento en los casos de personas con padecimiento cardiaco, 
+                                siendo menor el numéro de registros en donde dicen 'SI' a la cuestión, existe una mayor proporción
+                                de casos con enfermedades cardiacas.</p>"),
+                           
+                           imageOutput("correlacion"),
+                           
+                           HTML("<p>- Edad:En el siguiente gráfico se ve que existe una relación entre la edad y el número de
+                             casos con enfermedades cardiacas, entre más edad, mayor la probabilidad de padecer del corazón.<Br>
+                                - Indice de masa corporal: El gráfico de violín entre el índice de masa corporal tienen
+                                casi los mismos rangos y comportamiento. Se compararon ambos grupos por medio de 
+                                el test 'Wilcoxon' para muestras no paramétricas dando a conocer que si dieferen entre sí;
+                                lo que da a concocer que el índice de masa corporal también influye en las enfermedades
+                                cardiovasculares."),#Aquí voy
+                           
+                           imageOutput("variables")
+                           ),
+                  
+                  navbarMenu("Test",
+                             
+                             tabPanel("Torgersen",downloadButton("table1.out","Download Torgersen"),dataTableOutput("table1")),
+                             tabPanel("Biscoe",downloadButton("table2.out","Download Biscoe"),dataTableOutput("table2")),
+                             tabPanel("Dream",downloadButton("table3.out","Download Dream"),dataTableOutput("table3")) )
+)
+
+
+#SERVER
+serverp <- function(input, output) {
+  
+  output$corazon <- renderImage({
+    list(src = "../Programas/Imagenes CD/CORAZON.png",
+         width = 800, height = 430,
+         class = "centered-image")
+  }, deleteFile = FALSE)
+  
+  output$variables <- renderImage({
+    list(src = "../Programas/Imagenes CD/Edad y BMI.png",
+         width = 1050, height = 350,
+         class = "centered-image")
+  }, deleteFile = FALSE)
+  
+  output$correlacion <- renderImage({
+    list(src = "../Programas/Imagenes CD/Corartritis y fuma.png",
+         width = 1050, height = 350,
+         class = "centered-image")
+  }, deleteFile = FALSE)
+  
+  output$GRAFICA2 <- renderPlot({
+    X = input$VARx
+    Y = input$VARy
+    if(X == "sex"){colors = c("orange","purple")}else{colors = c("lightblue","lightgreen","lightyellow")}
+    
+    penguins2 %>% 
+      ggplot(aes(!!as.symbol(X),!!as.symbol(Y))) +
+      geom_boxplot(fill = colors)
+  })
+  
+  output$table1 <- renderDataTable({
+    data1
+  })
+  output$table1.out <- downloadHandler(
+    filename = function() {
+      "Torgersen.xlsx"
+    },
+    content = function(file) {
+      writexl::write_xlsx(data1, file)
+    }
+  )
+  
+  output$table2 <- renderDataTable({
+    data2
+  })
+  output$table2.out <- downloadHandler(
+    filename = function() {
+      "Biscoe.xlsx"
+    },
+    content = function(file) {
+      writexl::write_xlsx(data2, file)
+    }
+  )
+  
+  output$table3 <- renderDataTable({
+    data3
+  })
+  output$table3.out <- downloadHandler(
+    filename = function() {
+      "Dream.xlsx"
+    },
+    content = function(file) {
+      writexl::write_xlsx(data3, file)
+    }
+  )
+  
+}
+shinyApp(ui = uip, server = serverp)
+
+
+library(writexl)
+writexl::write_xlsx()
+
+
+
+
