@@ -1,9 +1,9 @@
 {
     "id": "E272E9CE",
-    "path": "C:/Users/diego/OneDrive/Escritorio/Data Scients/Portafolio/Cardiovascular Diseases Risk/Cardiovascular_Diseases_Risk/Programas/Modelos.R",
+    "path": "C:/Users/diego/OneDrive/Escritorio/Data Scients/Portafolio/Cardiovascular Diseases Risk/Cardiovascular_Diseases_Risk/Análisis y Modelo ML/Modelos.R",
     "project_path": "Modelos.R",
     "type": "r_source",
-    "hash": "2502920815",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1709166878631.0,
@@ -12,7 +12,7 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "5,0",
+        "cursorPosition": "4,0",
         "scrollLine": "0"
     },
     "folds": "",

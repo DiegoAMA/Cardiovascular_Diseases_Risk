@@ -195,19 +195,19 @@ serverp <- function(input, output) {
   })
   
   output$corazon <- renderImage({
-    list(src = "../Codigo/Imagenes CD/CORAZON.png",
+    list(src = "../Presentación Shiny//Imagenes CD/CORAZON.png",
          width = 750, height = 400,
          class = "centered-image")
   }, deleteFile = FALSE)
   
   output$variables <- renderImage({
-    list(src = "../Codigo/Imagenes CD/Edad y BMI.png",
+    list(src = "../Presentación Shiny//Imagenes CD/Edad y BMI.png",
          width = 1050, height = 350,
          class = "centered-image")
   }, deleteFile = FALSE)
   
   output$correlacion <- renderImage({
-    list(src = "../Codigo/Imagenes CD/Corartritis y fuma.png",
+    list(src = "../Presentación Shiny//Imagenes CD/Corartritis y fuma.png",
          width = 1050, height = 350,
          class = "centered-image")
   }, deleteFile = FALSE)
@@ -297,11 +297,11 @@ serverp <- function(input, output) {
                    
                    #
                    if(pred=="Yes"){
-                     list(src = "../Codigo/Imagenes CD/cuidate.png",
+                     list(src = "../Presentación Shiny//Imagenes CD/cuidate.png",
                           width = 450, height = 500,
                           class = "centered-image")
                    }else{
-                     list(src = "../Codigo/Imagenes CD/all good.png",
+                     list(src = "../Presentación Shiny//Imagenes CD/all good.png",
                           width = 550, height = 500,
                           class = "centered-image")
                    }})

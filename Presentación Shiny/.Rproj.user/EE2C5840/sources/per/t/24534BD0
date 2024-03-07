@@ -1,11 +1,11 @@
 {
     "id": "24534BD0",
-    "path": "C:/Users/diego/OneDrive/Escritorio/Data Scients/Portafolio/Cardiovascular Diseases Risk Prediction Dataset/Cardiovascular_Diseases_Risk_Prediction_Dataset/Codigo/Cardiovascular_Diseases_Risk/app.R",
+    "path": "C:/Users/diego/OneDrive/Escritorio/Data Scients/Portafolio/Cardiovascular Diseases Risk/Cardiovascular_Diseases_Risk/Presentación Shiny/Cardiovascular_Diseases_Risk/app.R",
     "project_path": "Cardiovascular_Diseases_Risk/app.R",
     "type": "r_source",
-    "hash": "3940508883",
+    "hash": "1249205110",
     "contents": "",
-    "dirty": true,
+    "dirty": false,
     "created": 1702947572014.0,
     "source_on_save": false,
     "relative_order": 4,
@@ -13,14 +13,14 @@
         "source_window_id": "",
         "Source": "Source",
         "cursorPosition": "314,0",
-        "scrollLine": "300"
+        "scrollLine": "296"
     },
     "folds": "",
-    "lastKnownWriteTime": 1700590268,
+    "lastKnownWriteTime": 1709773560,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1702947695013,
+    "last_content_update": 1709773560439,
     "read_only": false,
     "read_only_alternatives": []
 }
