@@ -1,5 +1,10 @@
 
 # Cardiovascular Diseases Risk
+
+<p align="center">
+  <img src="https://github.com/DiegoAMA/Imagenes/blob/76ee706c36cbfcfab51116a24cf086f0a1894fed/Cardiovascular%20Diseases/CORAZON%20INTRO.jpg"
+</p> <Br>
+
 <p>
 Este proyecto surge de la inquietud por comprender el comportamiento de las enfermedades cardiovasculares y explorar sus posibles detecciones y prevenciones.
 La información original proviene del Sistema de Vigilancia de Factores de Riesgo Conductual (BRFSS), el cual es el principal sistema nacional de encuestas 
