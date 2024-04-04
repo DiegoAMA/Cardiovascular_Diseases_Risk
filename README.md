@@ -21,7 +21,7 @@ y análisis utilizando Python como lenguaje de programación. Para acceder a la 
 Por mi parte, he realizado un análisis de los datos de forma independiente.
 En este caso, utilicé R y Shiny para llevar a cabo el estudio. El análisis se divide en tres partes distintas. </p> <Br>
 
-* [Análisis de los datos :floppy_disk:]
+* [Análisis de los datos :floppy_disk:](https://github.com/DiegoAMA/Cardiovascular_Diseases_Risk/blob/a87de2f2db39bab091583790afef3cba80c01a0f/An%C3%A1lisis%20y%20Modelo%20ML/An%C3%A1lisis.md)
 * [Desarrollo de modelo de machine learning :crystal_ball:]
 * [Desarrollo de páguina con shiny :green_book:]
 
