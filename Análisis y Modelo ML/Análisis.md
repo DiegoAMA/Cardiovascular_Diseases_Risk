@@ -1,5 +1,5 @@
 
-# Análisis
+# Exploración y Análisis
 
 <p>Behavioral Risk Factor Surveillance System (BRFSS) es el principal sistema de encuestas telefónicas relacionadas con la salud a nivel nacional en Estados Unidos, recopila datos estatales sobre los residentes del país en lo que respecta a sus comportamientos relacionados con el riesgo para la salud, las condiciones crónicas de salud y el uso de servicios preventivos. De esta fuente, el usuario 'ALPHIREE' en Kaggle proceso y limpio los registros para obtener el conjunto de datos.</p>
 
@@ -36,8 +36,3 @@ En la base las personas con padecimiento son el 8.79 %</p>
   </p>
 <Br>
 
-
-# Modelo de Machine Learning
-
-<p>
-</p>
