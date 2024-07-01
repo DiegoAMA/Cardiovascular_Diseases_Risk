@@ -119,8 +119,50 @@ ggplot(data = CDR) +
   labs(y = "Consumo de papas fritas (último mes)", x = "FriedPotato_Consumption")
 
 
+#Comparación variables categoricas fisher------------------------------
+#Función
+heart_relation <- function(VAR){
+  
+  heart <- "Heart_Disease"
+  
+  prueba <- CDR[,c(VAR,heart)] %>% table
+  
+  P <- fisher.test(prueba)
+  
+  ifelse(P$p.value, 
+         "Hay una asociación significativa",
+         "No hay una asociación significativa")
+  
+}
+
+names(CDR)
+
+heart_relation("Exercise") #Sin asociación
+heart_relation("Skin_Cancer") #Sin asociación
+heart_relation("Other_Cancer") #Sin asociación
+heart_relation("Depression") #Hay asociación
+heart_relation("Arthritis") #Sin asociación
+heart_relation("Sex") #Sin asociación
+heart_relation("Smoking_History") #Sin asociación
 
 
 
+#----------BMI-------------
 
+heart.yes.bmi <- CDR[CDR$Heart_Disease=="Yes","BMI"] 
+heart.no.bmi <- CDR[CDR$Heart_Disease=="No","BMI"]
+
+tseries::jarque.bera.test(heart.yes.bmi$BMI)
+tseries::jarque.bera.test(heart.no.bmi$BMI)
+
+qqnorm(heart.no.bmi$BMI)
+qqnorm(heart.yes.bmi$BMI)
+
+#No sposeen un comportamiento normal
+
+heart.yes.bmi
+
+wilcox.test(heart.yes.bmi$BMI,heart.no.bmi$BMI)
+#Existe suficiente evidencia para descartar la hipótesis nula, por lo tanto existe dieferencia.
+#entre los dos grupos.
 

@@ -3,7 +3,7 @@
     "path": "C:/Users/diego/OneDrive/Escritorio/Data Scients/Portafolio/Cardiovascular Diseases Risk/Cardiovascular_Diseases_Risk/Análisis y Modelo ML/Exploración y análisis.R",
     "project_path": "Exploración y análisis.R",
     "type": "r_source",
-    "hash": "2952687783",
+    "hash": "4193164910",
     "contents": "",
     "dirty": false,
     "created": 1709166873831.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "60,0",
-        "scrollLine": "90"
+        "cursorPosition": "167,0",
+        "scrollLine": "153"
     },
     "folds": "",
-    "lastKnownWriteTime": 1692053142,
+    "lastKnownWriteTime": 1719866663,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1692053142,
+    "last_content_update": 1719866663676,
     "read_only": false,
     "read_only_alternatives": []
 }
